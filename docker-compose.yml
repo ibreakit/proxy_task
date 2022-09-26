@@ -1,0 +1,11 @@
+version: '3'
+services: 
+  proxytaskwebservice:
+    environment:
+    - JWT-PRIVATE-KEY="YOUR-KEY-HERE"
+    build: .
+    ports:
+      - "8080:5000"
+    volumes:
+      - .:/usr/src/app
+    
