@@ -1,4 +1,5 @@
 from flask import Flask, request, Response
+from datetime import date
 import os
 import json
 import requests
@@ -30,9 +31,9 @@ def home():
             upstream_response = requests.post(url, headers={"x-my-jwt": jwt})
         except requests.exceptions.Timeout:
             # TO-DO: Add a retry on the request
-            print("uhoh")
+            print("Request timeout")
         except requests.exceptions.RequestException as e:
-            # catastrophic error. bail.
+            # catastrophic error.
             return Response('Fatal error has occurred', 500)
 
         return Response(
@@ -42,7 +43,7 @@ def home():
         )
 
 @app.route('/status')
-def stats():
+def status():
     return 'Uptime: ' + str(datetime.timedelta(seconds=getUptime()))
 
 ### HELPER FUNCTIONS ###
@@ -51,11 +52,10 @@ def stats():
 def generateJWT():
     # Load the JWT secret from an environment variable so it's not a hardcoded value
     private_key = os.environ['JWT-PRIVATE-KEY']
-    print(private_key)
 
     payload = {
         "user": "username",
-        "date": 123456
+        "date": date.today().strftime('%Y-%m-%d')
     }
 
     # Make the payload JSON encoded
@@ -73,8 +73,7 @@ def generateJWT():
 
     return json_web_token
 
+# Function to work out uptime
 def getUptime():
-    """
-    Returns the number of seconds since the program started.
-    """
+    # Work out the uptime
     return time.time() - start_time
